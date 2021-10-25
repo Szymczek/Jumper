@@ -10,7 +10,7 @@ SPRITESHEET = "jumper.png"
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.05
 PLAYER_GRAV = 0.5
-PLAYER_JUMP = 15
+PLAYER_JUMP = 25
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -25,3 +25,6 @@ PLATFORM_LIST = [(0, HEIGHT - 60),
                  (125, HEIGHT - 350),
                  (175, 200),
                  (350, 100)]
+# Game properties
+BOOST_POWER = 60
+POW_SPAWN_PCT = 7

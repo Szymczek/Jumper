@@ -32,18 +32,19 @@ class Game:
         # load sound
         self.snd_dir = path.join(self.dir, 'snd')
         self.jump_sound = pygame.mixer.Sound(path.join(self.snd_dir, 'jump_snd.wav'))
+        self.boost_sound = pygame.mixer.Sound(path.join(self.snd_dir, 'boost.ogg'))
+        self.jump_sound.set_volume(0.05)
+        self.boost_sound.set_volume(0.3)
 
     def new(self):
         # start a new game
         self.score = 0
         self.all_sprites = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
         self.player = Player(self)
-        self.all_sprites.add(self.player)
         for platform in PLATFORM_LIST:
-            p = Platform(self, *platform)
-            self.all_sprites.add(p)
-            self.platforms.add(p)
+            Platform(self, *platform)
         pygame.mixer.music.load(path.join(self.snd_dir, 'Winds Of Stories.ogg'))
         self.run()
 
@@ -57,6 +58,7 @@ class Game:
             self.update()
             self.draw()
         pygame.mixer.music.fadeout(500)
+
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
@@ -67,10 +69,12 @@ class Game:
                 for hit in hits:
                     if hit.rect.bottom > lowest.rect.bottom:
                         lowest = hit
-                if self.player.pos.y < lowest.rect.centery:
-                    self.player.pos.y = lowest.rect.top
-                    self.player.vel.y = 0
-                    self.player.jumping = False
+                if self.player.pos.x < lowest.rect.right + 10 and \
+                   self.player.pos.x > lowest.rect.left - 10:
+                    if self.player.pos.y < lowest.rect.centery:
+                        self.player.pos.y = lowest.rect.top
+                        self.player.vel.y = 0
+                        self.player.jumping = False
         # if player reaches top 1/4 of screen
         if self.player.rect.top <= HEIGHT / 4:
             self.player.pos.y += max(abs(self.player.vel.y), 2)
@@ -82,9 +86,14 @@ class Game:
         # spawn new platform
         while len(self.platforms) < 7:
             width = random.randrange(50, 100)
-            p = Platform(self, random.randrange(0, WIDTH-width), random.randrange(-75, -30))
-            self.platforms.add(p)
-            self.all_sprites.add(p)
+            Platform(self, random.randrange(0, WIDTH-width), random.randrange(-75, -30))
+        # if player hits powerup
+        pow_hits = pygame.sprite.spritecollide(self.player, self.powerups, True)
+        for pow in pow_hits:
+            if pow.type == 'boost':
+                self.boost_sound.play()
+                self.player.vel.y =- BOOST_POWER
+                self.player.jumping = False
         # Die
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:
@@ -110,6 +119,7 @@ class Game:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     self.player.jump_cut()
+
     def draw(self):
         # Game Loop - draw
         self.screen.fill(BGCOLOR)
@@ -121,6 +131,7 @@ class Game:
     def show_start_screen(self):
         pygame.mixer.music.load(path.join(self.snd_dir, 'TownTheme.ogg'))
         pygame.mixer.music.play(loops=-1)
+        pygame.mixer.music.set_volume(0.05)
         self.screen.fill(BGCOLOR)
         self.draw_text("JUMPY", 48, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("WSAD to move, space to jump", 22, WHITE, WIDTH / 2, HEIGHT / 2)
@@ -133,6 +144,7 @@ class Game:
     def show_go_screen(self):
         pygame.mixer.music.load(path.join(self.snd_dir, 'TownTheme.ogg'))
         pygame.mixer.music.play(loops=-1)
+        pygame.mixer.music.set_volume(0.05)
         if not self.running:
             return
         self.screen.fill(BGCOLOR)
