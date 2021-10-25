@@ -1,4 +1,3 @@
-
 TITLE = "Jumper"
 WIDTH = 480
 HEIGHT = 600
@@ -6,11 +5,13 @@ FPS = 60
 FONT_NAME = 'Arial'
 HS_FILE = "highscore.txt"
 SPRITESHEET = "jumper.png"
+
 # Player properties
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.05
 PLAYER_GRAV = 0.5
 PLAYER_JUMP = 15
+
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
