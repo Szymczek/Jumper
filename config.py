@@ -19,7 +19,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
-BGCOLOR = (200, 0, 200)
+BGCOLOR = (0, 0, 150)
 # Starting platforms
 PLATFORM_LIST = [(0, HEIGHT - 60),
                  (WIDTH / 2 - 100, HEIGHT - 200),
