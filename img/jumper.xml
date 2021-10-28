@@ -109,11 +109,13 @@
 	<SubTexture name="spring_out.png" x="434" y="1265" width="145" height="110"/>
 	<SubTexture name="sun1.png" x="534" y="913" width="142" height="148"/>
 	<SubTexture name="sun2.png" x="421" y="1390" width="148" height="142"/>
+
 	<SubTexture name="wingMan1.png" x="382" y="635" width="174" height="126"/>
 	<SubTexture name="wingMan2.png" x="0" y="1879" width="206" height="107"/>
 	<SubTexture name="wingMan3.png" x="0" y="1559" width="216" height="101"/>
 	<SubTexture name="wingMan4.png" x="0" y="1456" width="216" height="101"/>
 	<SubTexture name="wingMan5.png" x="382" y="510" width="182" height="123"/>
+
 	<SubTexture name="wing_left.png" x="558" y="651" width="85" height="74"/>
 	<SubTexture name="wing_right.png" x="571" y="1458" width="85" height="74"/>
 </TextureAtlas>

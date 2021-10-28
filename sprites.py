@@ -1,4 +1,6 @@
 # Sprites
+import random
+
 import pygame
 from config import *
 from random import choice, randrange
@@ -22,6 +24,7 @@ class Spritesheet:
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, game):
+        self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -115,10 +118,11 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.standing_frames[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
-
+        self.mask = pygame.mask.from_surface(self.image)
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = PLATFORM_LAYER
         self.groups = game.all_sprites, game.platforms
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -138,6 +142,7 @@ class Platform(pygame.sprite.Sprite):
 
 class Pow(pygame.sprite.Sprite):
     def __init__(self, game, plat):
+        self._layer = POW_LAYER
         self.groups = game.all_sprites, game.powerups
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -154,3 +159,65 @@ class Pow(pygame.sprite.Sprite):
         if not self.game.platforms.has(self.plat):
             self.kill()
 
+
+class Mob(pygame.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = MOB_LAYER
+        self.groups = game.all_sprites, game.mobs
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.loading_data()
+        self.image = self.flying_frames[0]
+        self.rect = self.image.get_rect()
+        self.rect.centerx = choice([0, WIDTH + 100])
+        self.vx = randrange(1, 4)
+        if self.rect.centerx > WIDTH:
+            self.vx *= -1
+        self.rect.y = randrange(HEIGHT / 2)
+        self.vy = 0
+        self.dy = 0.5
+
+    def update(self):
+        self.rect.x += self.vx
+        self.vy += self.dy
+        if self.vy > 3 or self.vy < - 3:
+            self.dy *= -1
+        center = self.rect.center
+        if self.dy < 0:
+            self.image = self.flying_frames[1]
+        else:
+            self.image = self.flying_frames[2]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.rect.y += self.vy
+        self.mask = pygame.mask.from_surface(self.image)
+        if self.rect.left > WIDTH + 100 or self.rect.right < - 100:
+            self.kill()
+
+
+    def loading_data(self):
+        self.flying_frames = [self.game.spritesheet.get_image(382, 635, 174, 126),
+                                self.game.spritesheet.get_image(0, 1879, 206, 107),
+                                self.game.spritesheet.get_image(0, 1559, 216, 101),
+                                self.game.spritesheet.get_image(0, 1456, 216, 101),
+                                self.game.spritesheet.get_image(382, 510, 182, 123)]
+        for frame in self.flying_frames:
+            frame.set_colorkey(BLACK)
+
+class Cloud(pygame.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = CLOUD_LAYER
+        self.groups = game.all_sprites, game.clouds
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = choice(self.game.cloud_images)
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        scale = randrange(50,101) / 100
+        self.image = pygame.transform.scale(self.image, (int(self.rect.width * scale), int(self.rect.height * scale)))
+        self.rect.x = random.randrange(WIDTH - self.rect.width)
+        self.rect.y = random.randrange(-500, 0)
+
+    def update(self):
+       if self.rect.top > HEIGHT * 2:
+            self.kill()
